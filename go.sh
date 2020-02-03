@@ -26,6 +26,16 @@ export STACK_VERSION=$VERSION
 export STACK_NETWORK=$NETWORK
 export STACK_PORT=$PORT
 
+if [ $NETWORK == "dev-net" ]; then
+        export STACK_DOMAIN=ltilauncher.dev.dlo.surf.nl
+fi
+if [ $NETWORK == "test-net" ]; then
+        export STACK_DOMAIN=ltilauncher.test.dlo.surf.nl
+fi
+if [ $NETWORK == "exp-net" ]; then
+        export STACK_DOMAIN=ltilauncher.experimenteer.dlo.surf.nl
+fi
+
 # delete previous version
 # note: geen rollback!
 docker stack rm $STACK_SERVICE
