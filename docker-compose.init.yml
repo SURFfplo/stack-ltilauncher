@@ -1,0 +1,74 @@
+version: '3.7'
+
+networks: 
+  dev-net:
+    external: true
+  test-net:
+    external: true
+  exp-net:
+    external: true
+
+secrets:
+  ltilauncher_db_dba_password:
+    external: true
+          
+services:
+  lti-db:
+    #image: postgres
+    image: 192.87.106.18:56001/postgres:0.1
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+      restart_policy:
+        condition: any
+    volumes:
+      #- $PWD/psql:/var/lib/postgresql/data
+      - /mnt/nfs/nfsdlo/$STACK_NETWORK/$STACK_SERVICE/$STACK_VERSION/psql:/var/lib/postgresql/data
+    secrets:
+      - ltilauncher_db_dba_password
+    networks:
+      - $STACK_NETWORK
+    environment:
+      POSTGRES_DB:       ltilauncher
+      POSTGRES_USER:     lti
+      POSTGRES_PG_PASSWORD_FILE: /run/secrets/ltilauncher_db_dba_password
+      
+  lti-web:
+    #image: ltilauncher
+    image: 192.87.106.18:56001/ltilauncher:0.1
+    #no bash in image & wait-for-it.sh needs bash...
+    #command: bash -c "/wait-for-it.sh -t 30 lti-db:5432 && /app/bin/rake db:migrate"
+    command: sh -c "sleep 20; /app/bin/rake db:migrate"
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+      restart_policy:
+        condition: any
+    volumes:
+      #- $PWD/wait-for-it.sh:/wait-for-it.sh
+      - /mnt/nfs/nfsdlo/$STACK_NETWORK/$STACK_SERVICE/$STACK_VERSION/tmp/wait-for-it.sh:/wait-for-it.sh
+    secrets:
+      - ltilauncher_db_dba_password
+    networks:
+      - $STACK_NETWORK
+    ports:
+      - $STACK_PORT:9393
+    environment:
+      RAILS_ENV: production
+      DOMAIN: localhost:9393
+      SECRET_KEY_BASE: 1225e73f1f9f0030eb106db3b5807c46d2ed431487a7ba780af73f08aa3eaebfe47f840f12f55e7180c3464076a19bec8575ec8533a9cba16e9d276c0d3ac225
+      DATABASE_URL: postgres://lti@lti-db/ltilauncher
+      #KONG_PG_HOST:          lti-db
+      #KONG_PG_PORT:          5432
+      #KONG_PG_DATABASE:      ltilauncher
+      #KONG_PG_USER:          lti
+      #KONG_PG_DB_PASSWORD_FILE: /run/secrets/ltilauncher_db_dba_password
+
