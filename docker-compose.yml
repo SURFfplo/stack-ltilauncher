@@ -61,6 +61,8 @@ services:
       DOMAIN: $STACK_DOMAIN:$STACK_PORT
       SECRET_KEY_BASE: 1225e73f1f9f0030eb106db3b5807c46d2ed431487a7ba780af73f08aa3eaebfe47f840f12f55e7180c3464076a19bec8575ec8533a9cba16e9d276c0d3ac225
       DATABASE_URL: postgres://lti@lti-db/ltilauncher
+      ADMIN_USER: admin
+      ADMIN_PASSWORD: test
       #KONG_PG_HOST:          lti-db
       #KONG_PG_PORT:          5432
       #KONG_PG_DATABASE:      ltilauncher
