@@ -63,6 +63,7 @@ services:
       DATABASE_URL: postgres://lti@lti-db/ltilauncher
       ADMIN_USER: admin
       ADMIN_PASSWORD: test
+      FORCE_SSL: 1
       #KONG_PG_HOST:          lti-db
       #KONG_PG_PORT:          5432
       #KONG_PG_DATABASE:      ltilauncher
